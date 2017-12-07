@@ -9,9 +9,6 @@ require 'packlink_lite/label'
 require 'packlink_lite/tracking_history'
 
 module PacklinkLite
-  PRODUCTION_URL = 'https://api.packlink.com/v1/'
-  SANDBOX_URL = 'https://apisandbox.packlink.com/v1/'
-
   module_function
 
   def configure
@@ -24,10 +21,6 @@ module PacklinkLite
 
   def client
     @client ||= Client.new
-  end
-
-  def url
-    config.testing? ? SANDBOX_URL : PRODUCTION_URL
   end
 
   def change_shipment_callback_url(url)
