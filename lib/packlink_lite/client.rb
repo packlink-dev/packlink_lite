@@ -34,24 +34,23 @@ module PacklinkLite
     end
 
     def connection(api_key)
-      token = api_key || PacklinkLite.config.api_key
+      token = api_key || config.api_key
+      raise(Error, 'API key is not set') if token.blank?
 
-      raise(Error, 'API key is not set') unless token
-
-      @connection ||= build_connection
-      @connection.headers['Authorization'] = token
-      @connection
+      (@connection ||= build_connection).tap do |conn|
+        conn.headers['Authorization'] = token
+      end
     end
 
     def build_connection
-      Faraday.new(url: PacklinkLite.url) do |builder|
+      Faraday.new(url: config.api_endpoint) do |builder|
         builder.options[:timeout] = config.timeout
         builder.options[:open_timeout] = config.timeout
 
         builder.request :retry
         builder.request :json
 
-        builder.headers['Accept'] = 'application/json'
+        builder.headers = config.headers
 
         builder.response :json, content_type: /\bjson$/
         builder.response :raise_error
